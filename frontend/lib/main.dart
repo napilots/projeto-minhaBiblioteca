@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(MyApp());
@@ -11,10 +13,10 @@ class MyApp extends StatelessWidget {
       title: 'Biblioteca - Cadastro de Livros',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF06402B), 
-      primary: const Color(0xFF06402B),
+          seedColor: const Color(0xFF06402B), 
+          primary: const Color(0xFF06402B),
         ),
-       ),
+      ),
       home: BookRegistrationPage(),
     );
   }
@@ -30,32 +32,65 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
   final _authorController = TextEditingController();
   List<Map<String, String>> _books = [];
 
-  void _addBook() {
+  // Função que envia o livro para o Banco de Dados
+  Future<void> _addBook() async {
     if (_titleController.text.isNotEmpty && _authorController.text.isNotEmpty) {
-      setState(() {
-        _books.add({
-          'title': _titleController.text,
-          'author': _authorController.text,
-        });
-        _titleController.clear();
-        _authorController.clear();
-      });
+      
+      // IMPORTANTE: 'host.docker.internal' faz a ponte entre o Container e seu Windows
+      final url = Uri.parse('http://host.docker.internal:3000/livros');
+
+      try {
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'nome': _titleController.text,   // Deve bater com o seu Model no Node
+            'autor': _authorController.text,
+          }),
+        );
+
+        if (response.statusCode == 201) {
+          setState(() {
+            _books.add({
+              'title': _titleController.text,
+              'author': _authorController.text,
+            });
+            _titleController.clear();
+            _authorController.clear();
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Livro salvo no MongoDB! 🌿'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          debugPrint('Erro no servidor: ${response.body}');
+        }
+      } catch (e) {
+        debugPrint('Erro de conexão: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Não foi possível falar com o servidor Node.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    
     const Color verdeEscuro = Color(0xFF06402B);
     
     return Scaffold(
       appBar: AppBar(
-        title: Text('Minha Biblioteca', style: TextStyle(fontWeight:FontWeight.bold, color: verdeEscuro), ),
+        title: const Text('Minha Biblioteca', style: TextStyle(fontWeight:FontWeight.bold, color: verdeEscuro), ),
         backgroundColor: Colors.green,
         centerTitle: true,
         elevation: 0,
       ),
-      
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
         child: Column(
@@ -67,7 +102,7 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             TextField(
               controller: _authorController,
               decoration: InputDecoration(
@@ -75,24 +110,18 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
-            SizedBox(height: 20),
-            
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _addBook,
-              child: Text('Adicionar Livro'),
               style: ElevatedButton.styleFrom(               
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,              
-                fixedSize: Size(180, 45), 
-                side: BorderSide(color: Colors.transparent),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                fixedSize: const Size(180, 45), 
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
+              child: const Text('Adicionar Livro'),
             ),
-            
-            SizedBox(height: 20),
-            // O Expanded faz com que a lista ocupe o resto do espaço disponível
+            const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
                 itemCount: _books.length,
