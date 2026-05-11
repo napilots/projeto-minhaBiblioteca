@@ -1,10 +1,10 @@
 # 📚 Aplicativo de Biblioteca
 
-Este projeto utiliza uma arquitetura de **Monorepo**, separando o aplicativo visual (Frontend) da API de dados (Backend).
+Este projeto utiliza uma arquitetura de **Monorepo**, separando o aplicativo visual (Frontend) da API de dados (Backend). O frontend foi reestruturado para rodar localmente, aproveitando o poder do Hot Reload para um desenvolvimento mais rápido.
 
 ## 📁 Estrutura de Pastas
 
-- **/frontend:** Aplicativo web desenvolvido em Flutter/Dart. Contém toda a interface do usuário (UI) e lógica de apresentação.
+- **/frontend:** Aplicativo web desenvolvido em Flutter/Dart. Contém toda a interface do usuário (UI), integração com a API e lógica de apresentação.
 - **/backend:** API REST construída em Node.js com TypeScript, Express e MongoDB.
 
 ## 🛠️ Tecnologias Utilizadas
@@ -16,9 +16,8 @@ Este projeto utiliza uma arquitetura de **Monorepo**, separando o aplicativo vis
 - CORS (compartilhamento de recursos)
 
 ### Frontend
-- Flutter & Dart
-- Docker (containerização)
-- Nginx (servidor web estático)
+- Flutter & Dart (Web)
+- Google Chrome (para depuração)
 
 ---
 
@@ -26,38 +25,32 @@ Este projeto utiliza uma arquitetura de **Monorepo**, separando o aplicativo vis
 
 ### Pré-requisitos Gerais
 - **Node.js 18+** (para o backend)
-- **npm** (gerenciador de pacotes)
-- **MongoDB** rodando localmente (porta 27017)
-- **Docker Desktop** (para o frontend)
-- **Git** (para clonar o repositório, se necessário)
+- **Flutter SDK** instalado e configurado no PATH do sistema
+- **Google Chrome** (para rodar a interface web)
+- **Docker Desktop** (apenas para rodar o banco de dados MongoDB)
+- **VS Code** com as extensões do Thunder Client e Flutter
 
 ---
 
-## 1️⃣ Backend (Node.js + TypeScript + MongoDB)
+## 1️⃣ Banco de Dados e Backend (Node.js + MongoDB)
 
-### Passo 1: Instalar Dependências
+### Passo 1: Iniciar o Banco de Dados (MongoDB via Docker)
 
-No terminal, navegue até a pasta do backend:
-```bash
-cd backend
-```
-
-Instale as dependências do Node.js:
-```bash
-npm install
-```
-
-### Passo 2: Configurar MongoDB
-
-Certifique-se de que o MongoDB está rodando na sua máquina. Se estiver usando Docker, execute:
+Certifique-se de que o Docker está aberto na sua máquina e execute o comando abaixo para criar o banco de dados:
 
 ```bash
 docker run -d -p 27017:27017 --name mongodb -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=senha_segura mongo
 ```
 
-> **Nota:** As credenciais (admin/senha_segura) devem corresponder às configuradas em `src/server.ts`
+> **Nota:** Se o container `mongodb` já existir, basta iniciá-lo com `docker start mongodb`.
 
-### Passo 3: Iniciar o Servidor Backend
+### Passo 2: Configurar e Rodar o Backend
+
+Abra um terminal, navegue até a pasta do backend e instale as dependências:
+```bash
+cd backend
+npm install
+```
 
 Execute o servidor:
 ```bash
@@ -65,139 +58,83 @@ npx ts-node src/server.ts
 ```
 
 Você deverá ver no terminal:
-```
+```text
 📦 Conectado com sucesso ao MongoDB do Docker!
 🚀 API da Biblioteca rodando na porta 3000!
 ```
 
-**API estará disponível em:** `http://localhost:3000`
+---
+
+## 2️⃣ Frontend (Flutter Web)
+
+Como o Flutter agora está instalado na sua máquina, você não precisa mais esperar contêineres carregarem. O processo é instantâneo.
+
+### Passo 1: Preparar o ambiente
+
+Abra um **novo terminal** (deixando o backend rodando no anterior) e navegue até a pasta do frontend:
+```bash
+cd frontend
+flutter pub get
+```
+
+### Passo 2: Executar a Aplicação
+
+Inicie o site no Google Chrome com o seguinte comando:
+```bash
+flutter run -d chrome
+```
+
+O Google Chrome abrirá automaticamente com o seu aplicativo de Biblioteca.
+
+### ⚡ A Mágica do Hot Reload
+Com o aplicativo rodando, você pode fazer alterações no código do Flutter no VS Code. Ao salvar o arquivo (`Ctrl + S`) ou apertar a tecla `r` no terminal, a interface visual será atualizada **imediatamente** no navegador, sem precisar reiniciar nada!
+
+---
+
+## 📋 Resumo de Portas e Endereços
+
+| Componente | Porta/URL |
+|-----------|-----|
+| **Backend (API)** | `http://localhost:3000` |
+| **Frontend (Web)** | Dinâmica (o Flutter informará a URL no terminal, ex: `localhost:5134`) |
+| **MongoDB** | `mongodb://admin:senha_segura@localhost:27017/` |
 
 ---
 
 ## 🧪 Testando a API com Thunder Client
 
-O Thunder Client é uma extensão do VS Code para testar APIs REST de forma simples e intuitiva.
+O Thunder Client é uma excelente ferramenta para testar rotas sem depender do frontend.
 
-### Passo 1: Instalar Thunder Client
+1. Abra a extensão no VS Code (ícone de raio ⚡).
+2. Clique em **New Request**.
 
-1. Abra o VS Code
-2. Vá para a aba **Extensões** (Ctrl+Shift+X)
-3. Pesquise por **Thunder Client**
-4. Clique em **Instalar** (extensão oficial por Ranga Vadhineni)
+#### 📌 Rotas Disponíveis para Teste:
 
-### Passo 2: Abrir Thunder Client
-
-1. Clique no ícone do Thunder Client na barra lateral do VS Code (parece um raio ⚡)
-2. Clique em **New Request** para criar uma nova requisição
-
-### Passo 3: Testar os Endpoints
-
-#### 📌 Teste 1: GET - Verificar se a API está rodando
-```
-Método: GET
-URL: http://localhost:3000
-```
-**Resultado esperado:**
-```
-🚀 API da Biblioteca rodando com TypeScript!
-```
-
-#### 📌 Teste 2: POST - Criar um novo livro
-```
-Método: POST
-URL: http://localhost:3000/livros
-Headers: 
-  - Content-Type: application/json
-Body (JSON):
-{
-  "nome": "O Senhor dos Anéis",
-  "autor": "J.R.R. Tolkien"
-}
-```
-
-#### 📌 Teste 3: GET - Listar todos os livros
-```
-Método: GET
-URL: http://localhost:3000/livros
-```
-
-### 💡 Dicas Úteis
-
-- **Salvar Requisições:** Clique em "Save Request" para guardar suas requisições no Thunder Client
-- **Ver Resposta:** A resposta aparece no painel à direita em tempo real
-- **Status da Requisição:** Você verá o status HTTP (200, 404, 500, etc.)
-
----
-
-## 2️⃣ Frontend (Flutter/Dart com Docker)
-
-### Passo 1: Construir a Imagem Docker
-
-No terminal, navegue até a pasta do frontend:
-```bash
-cd frontend
-```
-
-Construa a imagem Docker:
-```bash
-docker build -t library-app-frontend .
-```
-
-> Este comando pode levar alguns minutos na primeira execução, pois precisa baixar o Flutter SDK.
-
-### Passo 2: Executar o Container
-
-Inicie o contêiner mapeando a porta:
-```bash
-docker run -d -p 8080:80 --name frontend-container library-app-frontend
-```
-
-### Passo 3: Acessar a Aplicação
-
-Abra seu navegador e acesse:
-```
-http://localhost:8080
-```
-
----
-
-## 📋 Resumo de Portas
-
-| Componente | Porta | URL |
-|-----------|-------|-----|
-| Backend (API) | 3000 | `http://localhost:3000` |
-| Frontend (Web) | 8080 | `http://localhost:8080` |
-| MongoDB | 27017 | `mongodb://admin:senha_segura@localhost:27017/` |
+* **Listar Livros (GET):** `http://localhost:3000/livros`
+* **Criar Livro (POST):** `http://localhost:3000/livros`
+    * *Aba Body (JSON):* `{"nome": "Jantar Secreto", "autor": "Raphael Montes"}`
+* **Deletar Livro (DELETE):** `http://localhost:3000/livros/COLOQUE_O_ID_AQUI`
 
 ---
 
 ## 🛑 Comandos Úteis
 
-### Parar e remover containers Docker
+### Gerenciamento do Banco de Dados
 ```bash
-# Parar o container do frontend
-docker stop frontend-container
+# Iniciar o banco de dados (se já foi criado antes)
+docker start mongodb
 
-# Remover o container
-docker rm frontend-container
-
-# Parar o MongoDB
+# Parar o banco de dados temporariamente
 docker stop mongodb
-
-# Remover o MongoDB
-docker rm mongodb
 ```
 
-### Ver logs do backend
-```bash
-# Se ainda estiver rodando, veja os logs no terminal
-# Ou execute novamente com ts-node
-```
-
-### Reconstruir imagem Docker (se fizer mudanças no frontend)
+### Limpeza e Manutenção do Frontend
+Se a interface ficar em branco ou apresentar erros de cache no navegador, rode:
 ```bash
 cd frontend
-docker build -t library-app-frontend .
+flutter clean
+flutter pub get
+flutter run -d chrome
 ```
 
 ---
@@ -205,26 +142,12 @@ docker build -t library-app-frontend .
 ## ⚠️ Resolução de Problemas
 
 ### Backend não conecta ao MongoDB
-- Verifique se o MongoDB está rodando: `docker ps`
-- Verifique as credenciais em `src/server.ts`
-- Certifique-se de que a porta 27017 está livre
+- Verifique se o Docker está aberto e o container do banco está rodando: `docker ps`
+- Verifique se as senhas no `server.ts` batem com as do container.
 
-### Erro ao rodar `npx ts-node`
-- Reinstale as dependências: `npm install`
-- Limpe cache do npm: `npm cache clean --force`
-- Verifique se Node.js 18+ está instalado: `node --version`
+### Erro "Cannot read properties of null (reading 'append')" no Frontend
+- O cache do navegador está em conflito com o código do Flutter. Encerre o aplicativo no terminal (`q`), rode `flutter clean`, depois `flutter pub get` e rode novamente.
 
-### Frontend não carrega no navegador
-- Verifique se o container está rodando: `docker ps`
-- Verifique a porta: `http://localhost:8080`
-- Reconstrua a imagem: `docker build -t library-app-frontend .`
-
----
-
-## 📝 Notas Adicionais
-
-- Este é um projeto **em desenvolvimento** (monorepo)
-- O backend ainda está sendo implementado com mais rotas e funcionalidades
-- O frontend é uma aplicação web responsiva
-- Ambos os serviços podem rodar simultaneamente em portas diferentes
-
+### Livros não aparecem na tela (Tela Branca)
+- Garanta que o backend está rodando em outro terminal simultaneamente.
+- Aperte `Ctrl + Shift + R` no Google Chrome para limpar o cache da página.
