@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,8 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Biblioteca - Cadastro de Livros',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF06402B), 
-          primary: const Color(0xFF06402B),
+          seedColor: Colors.deepPurple, // Nova cor base
         ),
       ),
       home: BookRegistrationPage(),
@@ -89,7 +89,6 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
             _authorController.clear();
           });
 
-          // Fecha a janelinha flutuante automaticamente após salvar!
           if (Navigator.canPop(context)) {
             Navigator.pop(context);
           }
@@ -132,9 +131,7 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
     }
   }
 
-  // --- NOVA FUNÇÃO: Cria a Janelinha Flutuante (Modal) ---
   void _abrirJanelinhaCadastro() {
-    // Limpa os campos sempre que abrir a janela
     _titleController.clear();
     _authorController.clear();
 
@@ -149,12 +146,12 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
               const Text('Cadastrar Novo Livro', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
               IconButton(
                 icon: const Icon(Icons.close, color: Colors.grey),
-                onPressed: () => Navigator.of(context).pop(), // Botão de fechar (X)
+                onPressed: () => Navigator.of(context).pop(), 
               ),
             ],
           ),
           content: Column(
-            mainAxisSize: MainAxisSize.min, // Faz a janela ter o tamanho exato dos campos
+            mainAxisSize: MainAxisSize.min, 
             children: [
               TextField(
                 controller: _titleController,
@@ -188,7 +185,7 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
               child: ElevatedButton(
                 onPressed: _addBook,
                 style: ElevatedButton.styleFrom(               
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.deepPurple, 
                   foregroundColor: Colors.white,              
                   fixedSize: const Size(180, 45), 
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -196,7 +193,7 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
                 child: const Text('Salvar Livro', style: TextStyle(fontSize: 16)),
               ),
             ),
-            const SizedBox(height: 10), // Dá um espacinho em baixo do botão
+            const SizedBox(height: 10), 
           ],
         );
       },
@@ -205,62 +202,97 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    const Color verdeEscuro = Color(0xFF06402B);
-    
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Fundo levemente cinza para destacar os cards
+      extendBodyBehindAppBar: true, 
+      
       appBar: AppBar(
-        title: const Text('Minha Biblioteca', style: TextStyle(fontWeight: FontWeight.bold, color: verdeEscuro)),
-        backgroundColor: Colors.green,
+        // Substituímos o Text simples por uma Row (Linha) com Ícone + Texto
+        title: Row(
+          mainAxisSize: MainAxisSize.min, // Garante que a logo fique centralizada
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2), // Um fundo translúcido para o ícone
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.menu_book_rounded, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 12), // Espaço entre o ícone e o texto
+            Text(
+              'Minha Biblioteca', 
+              style: GoogleFonts.poppins( // Usando a fonte nova!
+                fontWeight: FontWeight.w700, 
+                color: Colors.white, 
+                letterSpacing: 1.0,
+                fontSize: 22,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.transparent, 
         centerTitle: true,
-        elevation: 0,
+        elevation: 0, 
       ),
       
-      // O botão que vai abrir a sua janelinha flutuante!
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _abrirJanelinhaCadastro,
-        backgroundColor: verdeEscuro,
+        backgroundColor: Colors.deepPurpleAccent, 
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text('Adicionar', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
-        child: _books.isEmpty 
-          ? const Center(child: Text('Nenhum livro na biblioteca ainda. 📚', style: TextStyle(fontSize: 18, color: Colors.grey)))
-          : ListView.builder(
-              itemCount: _books.length,
-              itemBuilder: (context, index) {
-                // Design de Card mais moderno
-                return Card( 
-                  elevation: 2,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      leading: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
-                          shape: BoxShape.circle,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.deepPurple.shade900, 
+              Colors.indigo.shade500,     
+              Colors.blue.shade400,       
+            ],
+          ),
+        ),
+        child: SafeArea( 
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 80.0, vertical: 20.0),
+            child: _books.isEmpty 
+              ? const Center(child: Text('Nenhum livro na biblioteca ainda. 📚', style: TextStyle(fontSize: 18, color: Colors.white70)))
+              : ListView.builder(
+                  itemCount: _books.length,
+                  itemBuilder: (context, index) {
+                    return Card( 
+                      elevation: 4, 
+                      margin: const EdgeInsets.only(bottom: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.deepPurple.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.auto_stories, color: Colors.deepPurple), 
+                          ),
+                          title: Text(_books[index]['title']!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87)),
+                          subtitle: Text('Autor: ${_books[index]['author']!}', style: const TextStyle(color: Colors.black54)),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                            tooltip: 'Apagar',
+                            onPressed: () {
+                              _deleteBook(_books[index]['id']!, index);
+                            },
+                          ),
                         ),
-                        child: const Icon(Icons.book, color: Colors.green),
                       ),
-                      title: Text(_books[index]['title']!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      subtitle: Text('Autor: ${_books[index]['author']!}'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.red),
-                        tooltip: 'Apagar',
-                        onPressed: () {
-                          _deleteBook(_books[index]['id']!, index);
-                        },
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
+          ),
+        ),
       ),
     );
   }
