@@ -36,8 +36,8 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
   Future<void> _addBook() async {
     if (_titleController.text.isNotEmpty && _authorController.text.isNotEmpty) {
       
-      // IMPORTANTE: 'host.docker.internal' faz a ponte entre o Container e seu Windows
-      final url = Uri.parse('http://host.docker.internal:3000/livros');
+      
+      final url = Uri.parse('http://localhost:3000/livros');
 
       try {
         final response = await http.post(
