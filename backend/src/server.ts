@@ -56,6 +56,20 @@ app.get('/livros', async (req, res) => {
   }
 });
 
+// NOVA ROTA: Rota de Deleção (DELETE)
+app.delete('/livros/:id', async (req, res) => {
+  try {
+    const idDoLivro = req.params.id;
+    
+    // Pede ao banco para encontrar o livro por esse ID e apagar
+    await book.findByIdAndDelete(idDoLivro); 
+    
+    res.status(200).json({ mensagem: 'Livro deletado com sucesso!' });
+  } catch (erro) {
+    res.status(500).json({ erro: 'Falha ao deletar o livro' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
