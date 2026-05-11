@@ -43,6 +43,19 @@ app.post('/livros', async (req, res) => {
   }
 });
 
+// NOVA ROTA: Rota de Leitura (GET) para listar todos os livros
+app.get('/livros', async (req, res) => {
+  try {
+    // Pede ao banco de dados para encontrar (find) todos os livros salvos
+    const listaDeLivros = await book.find(); 
+    
+    // Responde com status 200 (OK) e envia a lista no formato JSON
+    res.status(200).json(listaDeLivros);
+  } catch (erro) {
+    res.status(500).json({ erro: 'Falha ao buscar os livros no banco de dados' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
