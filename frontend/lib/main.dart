@@ -5,11 +5,11 @@ import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
-  runApp(const MyApp()); // Correção const
+  runApp(const MyApp()); 
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // Correção const
+  const MyApp({super.key}); 
 
   @override
   Widget build(BuildContext context) {
@@ -21,13 +21,13 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.deepPurple, 
         ),
       ),
-      home: const BookRegistrationPage(), // Correção const
+      home: const BookRegistrationPage(), 
     );
   }
 }
 
 class BookRegistrationPage extends StatefulWidget {
-  const BookRegistrationPage({super.key}); // Correção const
+  const BookRegistrationPage({super.key}); 
 
   @override
   _BookRegistrationPageState createState() => _BookRegistrationPageState();
@@ -45,14 +45,14 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
   }
 
   Future<void> _fetchBooks() async {
-    final url = Uri.parse('http://localhost:3000/livros');
+    // Voltamos para a porta 3333!
+    final url = Uri.parse('http://127.0.0.1:3333/livros');
     try {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         final List<dynamic> dadosDoBanco = json.decode(response.body);
         
-        // Verifica se a tela ainda existe antes de atualizar
         if (!mounted) return; 
 
         setState(() {
@@ -74,8 +74,8 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
 
   Future<void> _addBook() async {
     if (_titleController.text.isNotEmpty && _authorController.text.isNotEmpty) {
-      final url = Uri.parse('http://localhost:3000/livros');
-
+      // Voltamos para a porta 3333!
+      final url = Uri.parse('http://127.0.0.1:3333/livros');
       try {
         final response = await http.post(
           url,
@@ -87,8 +87,7 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
         );
 
         if (response.statusCode == 201) {
-          
-          if (!mounted) return; // Correção de BuildContext assíncrono
+          if (!mounted) return; 
 
           setState(() {
             _books.add({
@@ -120,14 +119,14 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
   }
 
   Future<void> _deleteBook(String id, int index) async {
-    final url = Uri.parse('http://localhost:3000/livros/$id');
+    // Voltamos para a porta 3000!
+    final url = Uri.parse('http://127.0.0.1:3333/livros/$id');
 
     try {
       final response = await http.delete(url);
 
       if (response.statusCode == 200) {
-        
-        if (!mounted) return; // Correção de BuildContext assíncrono
+        if (!mounted) return; 
 
         setState(() {
           _books.removeAt(index);
@@ -226,7 +225,7 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2), // Correção do Opacity
+                color: Colors.white.withValues(alpha: 0.2), 
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.menu_book_rounded, color: Colors.white, size: 24),
@@ -285,7 +284,7 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
                           leading: Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withValues(alpha: 0.1), // Correção do Opacity
+                              color: Colors.deepPurple.withValues(alpha: 0.1), 
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.auto_stories, color: Colors.deepPurple), 
