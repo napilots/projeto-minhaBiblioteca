@@ -1,13 +1,16 @@
+// ignore_for_file: library_private_types_in_public_api
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp()); // Correção const
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key}); // Correção const
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,15 +18,17 @@ class MyApp extends StatelessWidget {
       title: 'Biblioteca - Cadastro de Livros',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple, // Nova cor base
+          seedColor: Colors.deepPurple, 
         ),
       ),
-      home: BookRegistrationPage(),
+      home: const BookRegistrationPage(), // Correção const
     );
   }
 }
 
 class BookRegistrationPage extends StatefulWidget {
+  const BookRegistrationPage({super.key}); // Correção const
+
   @override
   _BookRegistrationPageState createState() => _BookRegistrationPageState();
 }
@@ -47,6 +52,9 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
       if (response.statusCode == 200) {
         final List<dynamic> dadosDoBanco = json.decode(response.body);
         
+        // Verifica se a tela ainda existe antes de atualizar
+        if (!mounted) return; 
+
         setState(() {
           _books = dadosDoBanco.map<Map<String, String>>((livro) {
             return {
@@ -79,6 +87,9 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
         );
 
         if (response.statusCode == 201) {
+          
+          if (!mounted) return; // Correção de BuildContext assíncrono
+
           setState(() {
             _books.add({
               'id': json.decode(response.body)['_id']?.toString() ?? '',
@@ -115,6 +126,9 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
       final response = await http.delete(url);
 
       if (response.statusCode == 200) {
+        
+        if (!mounted) return; // Correção de BuildContext assíncrono
+
         setState(() {
           _books.removeAt(index);
         });
@@ -206,22 +220,21 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
       extendBodyBehindAppBar: true, 
       
       appBar: AppBar(
-        // Substituímos o Text simples por uma Row (Linha) com Ícone + Texto
         title: Row(
-          mainAxisSize: MainAxisSize.min, // Garante que a logo fique centralizada
+          mainAxisSize: MainAxisSize.min, 
           children: [
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2), // Um fundo translúcido para o ícone
+                color: Colors.white.withValues(alpha: 0.2), // Correção do Opacity
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.menu_book_rounded, color: Colors.white, size: 24),
             ),
-            const SizedBox(width: 12), // Espaço entre o ícone e o texto
+            const SizedBox(width: 12), 
             Text(
               'Minha Biblioteca', 
-              style: GoogleFonts.poppins( // Usando a fonte nova!
+              style: GoogleFonts.poppins( 
                 fontWeight: FontWeight.w700, 
                 color: Colors.white, 
                 letterSpacing: 1.0,
@@ -272,7 +285,7 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
                           leading: Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(0.1),
+                              color: Colors.deepPurple.withValues(alpha: 0.1), // Correção do Opacity
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.auto_stories, color: Colors.deepPurple), 
