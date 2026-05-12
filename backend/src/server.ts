@@ -1,7 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors'; // <-- 1. Importando o porteiro
-import Book from './models/book';
 import book from './models/book';
 
 const app = express();

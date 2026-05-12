@@ -157,7 +157,7 @@ class _BookRegistrationPageState extends State<BookRegistrationPage> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Cadastrar Novo Livro', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              const Text('Cadastrar novo livro', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
               IconButton(
                 icon: const Icon(Icons.close, color: Colors.grey),
                 onPressed: () => Navigator.of(context).pop(), 
